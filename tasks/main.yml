@@ -44,7 +44,7 @@
     dest=/home/ec2-user/pinku-mandrill
 
 - name: 'Copy icecast config'
-  shell: cp /home/ec2-user/pinku-mandrill/app/icecast-config/icecast.xml /usr/local/etc/
+  shell: cp /home/ec2-user/pinku-mandrill/icecast.xml /usr/local/etc/
 
 - name: 'Create log folder'
   file:
@@ -57,18 +57,21 @@
 
 - name: 'Install front end deps'
   npm:
-    path: /home/ec2-user/pinku-mandrill/app/web
+    path: /home/ec2-user/pinku-mandrill/web
 
 - name: 'Create playlist file'
   shell: touch /home/ec2-user/playlist.txt
 
 - name: 'Start ezstream'
-  shell: ezstream -c /home/ec2-user/pinku-mandrill/app/ezstream-config/ezstream_mp3.xml &
+  shell: ezstream -c /home/ec2-user/pinku-mandrill/ezstream_mp3.xml &
+
+- name: 'Start web'
+  shell: node /home/ec2-user/pinku-mandrill/web/index.js &
 
 - name: 'Config nginx'
   copy:
     remote_src: yes
-    src: /home/ec2-user/pinku-mandrill/proxy/nginx.conf
+    src: /home/ec2-user/pinku-mandrill/nginx.conf
     dest: /usr/local/etc/nginx/nginx.conf
 
 - name: 'Start nginx'

@@ -1,5 +1,0 @@
-- name: 'Create music dir'
-  raw: mkdir /home/ec2-user/music
-
-- name: 'Install Python'
-  raw: sudo pkg install -y python
