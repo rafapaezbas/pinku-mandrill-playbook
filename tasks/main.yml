@@ -1,0 +1,77 @@
+- name: 'Install Git'
+  pkgng:
+    name: git
+    state: present
+
+- name: 'Install Node'
+  pkgng:
+    name: node
+    state: present
+
+- name: 'Install Icecast'
+  pkgng:
+    name: icecast
+    state: present
+
+- name: 'Install Ezstream'
+  pkgng:
+    name: ezstream
+    state: present
+
+- name: 'Install Nginx'
+  pkgng:
+    name: nginx
+    state: present
+
+- name: 'Install Bash'
+  pkgng:
+    name: bash
+    state: present
+
+- name: 'Install npm'
+  pkgng:
+    name: npm
+    state: present
+
+- name: 'Install mp3info'
+  pkgng:
+    name: mp3info
+    state: present
+
+- name: 'Clone pm'
+  git:
+    repo=https://{{ githubuser | urlencode }}:{{ githubpassword | urlencode }}@github.com/{{ githubuser }}/pinku-mandrill.git
+    dest=/home/ec2-user/pinku-mandrill
+
+- name: 'Copy icecast config'
+  shell: cp /home/ec2-user/pinku-mandrill/app/icecast-config/icecast.xml /usr/local/etc/
+
+- name: 'Create log folder'
+  file:
+    path: /var/log/icecast2
+    state: directory
+    mode: 0775
+
+- name: 'Start icecast'
+  shell: icecast -c /usr/local/etc/icecast.xml -b
+
+- name: 'Install front end deps'
+  npm:
+    path: /home/ec2-user/pinku-mandrill/app/web
+
+- name: 'Create playlist file'
+  shell: touch /home/ec2-user/playlist.txt
+
+- name: 'Start ezstream'
+  shell: ezstream -c /home/ec2-user/pinku-mandrill/app/ezstream-config/ezstream_mp3.xml &
+
+- name: 'Config nginx'
+  copy:
+    remote_src: yes
+    src: /home/ec2-user/pinku-mandrill/proxy/nginx.conf
+    dest: /usr/local/etc/nginx/nginx.conf
+
+- name: 'Start nginx'
+  service:
+    name: nginx
+    state: started

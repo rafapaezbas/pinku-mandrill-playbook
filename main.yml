@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: yes
+
+  vars_prompt:
+    - name: "githubuser"
+      prompt: "Enter your github username"
+      private: no
+    - name: "githubpassword"
+      prompt: "Enter your github password"
+      private: yes
+
+  tasks:
+    - import_tasks: tasks/main.yml
